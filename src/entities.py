@@ -11,12 +11,11 @@ class Patient:
     def __init__(self, p_id, arrival_time) -> None:
         self.p_id = p_id
         self.arrival_time = arrival_time
-        self.time_in_system = 0
         self.params = Params()
 
     def set_priority(self):
         priority_distribution = DiscreteNormal(self.params.mean_priority, self.params.stdev_priority,1,5,1)
-        self.priority = priority_distribution.sample()[0]
+        self.priority = int(priority_distribution.sample()[0])
 
     def set_outcome(self):
         # decision tree - if priority 5, go to Minor Injury Unit (MIU) or home. Higher priority go to AE

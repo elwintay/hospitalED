@@ -5,7 +5,7 @@ class Lognormal:
     """
     Encapsulates a lognormal distirbution
     """
-    def __init__(self, mean, stdev, random_seed=None):
+    def __init__(self, mean, stdev, random_seed=42):
         """
         Params:
         -------
@@ -48,7 +48,7 @@ class DiscreteNormal:
     """
     Encapsulates a normal distirbution with discrete values
     """
-    def __init__(self, mu, sigma, discrete_lowest, discrete_highest, n_samples) -> None:
+    def __init__(self, mu, sigma, discrete_lowest, discrete_highest, n_samples, random_seed=42) -> None:
         """
         Params:
         -------
@@ -63,6 +63,7 @@ class DiscreteNormal:
         self.discrete_lowest = discrete_lowest
         self.discrete_highest = discrete_highest
         self.n_samples = n_samples
+        self.seed = random_seed
 
     def sample(self):
         '''
@@ -72,6 +73,7 @@ class DiscreteNormal:
         -------
         (list)
         '''
+        np.random.seed(self.seed)
         continuous_samples = np.random.normal(self.mu, self.sigma, self.n_samples)
         discrete_samples = np.clip(np.round(continuous_samples), self.discrete_lowest, self.discrete_highest).astype(int)
         return list(discrete_samples)
