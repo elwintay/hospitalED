@@ -47,7 +47,8 @@ class Triage:
         # Add patient to consultation queue
         main_queue_length = len(self.main_consultation.queue)
         fast_queue_length = len(self.fast_consultation.queue)
-        print(main_queue_length, fast_queue_length)
+        
+        #Decision to go fast or main consult based on queue length
         if patient.triage_outcome == 'fast':
             if fast_queue_length <= main_queue_length:
                 print("FAST CONSULT")
@@ -59,7 +60,7 @@ class Triage:
             print("MAIN CONSULT")
             self.main_consultation.add_patient(patient)
             
-        # Finish attending and move to the next patient if available
+        # Finish attending
         self.queue.pop(0)
 
 
@@ -91,14 +92,14 @@ class FastConsultation:
             print(f"Time {self.env.now}: Resource utilization {self.consultation_resource.count}/{self.consultation_resource.capacity}, Queue: {len(self.consultation_resource.queue)}")
 
             print(f"Patient {patient.p_id} consulted FAST at {self.env.now} after waiting {patient.consultation_wait_time} time units after triage.")
-        
+        #decision to go lab
         if patient.lab_outcome == 'lab':
             print("FAST LAB")
             self.fast_lab.add_patient(patient)
         else:
             self.dataset.patient_list.append(patient)
 
-        # Finish consulting and move to the next patient if available
+        # Finish consulting
         self.queue.pop(0)
 
 class MainConsultation:
@@ -131,6 +132,7 @@ class MainConsultation:
 
             print(f"Patient {patient.p_id} consulted MAIN at {self.env.now} after waiting {patient.consultation_wait_time} time units after triage.")
 
+        # Decision to go lab or get bedded or go home
         if patient.lab_outcome == 'lab':
             print("MAIN LAB")
             self.main_lab.add_patient(patient)
@@ -141,7 +143,7 @@ class MainConsultation:
             else:
                 self.dataset.patient_list.append(patient)
 
-        # Finish consulting and move to the next patient if available
+        # Finish consulting
         self.queue.pop(0)
 
 class FastLab:
@@ -172,7 +174,7 @@ class FastLab:
 
             print(f"Patient {patient.p_id} finished lab FAST at {self.env.now} after waiting {patient.lab_wait_time} time units after consultation.")
 
-        # Finish consulting and move to the next patient if available
+        # Finish lab, output the patient
         self.dataset.patient_list.append(patient)
         self.queue.pop(0)
 
@@ -192,10 +194,10 @@ class MainLab:
 
     def lab_patient(self, patient):
         with self.lab_resource.request(priority=patient.priority) as request:
-            yield request  # Wait for a spot in the consultation area
+            yield request  # Wait for a spot in the lab area
             wait_start_time = self.env.now
         
-            # Simulate time taken to consult the patient
+            # Simulate time taken to lab the patient
             lognorm = Lognormal(mean=self.params.mean_lab_main, stdev=self.params.stdev_lab_main)
             lab_time = lognorm.sample()
             yield self.env.timeout(lab_time)
@@ -211,7 +213,7 @@ class MainLab:
         else:
             self.dataset.patient_list.append(patient)
 
-        # Finish consulting and move to the next patient if available
+        # Finished lab
         self.queue.pop(0)
 
 class BedAssignment:
