@@ -44,6 +44,7 @@ class Lognormal:
         """
         return self.rand.lognormal(self.mu, self.sigma)
     
+#NOT USED, FOR REFERENCE ONLY
 class DiscreteNormal:
     """
     Encapsulates a normal distirbution with discrete values
@@ -63,7 +64,7 @@ class DiscreteNormal:
         self.discrete_lowest = discrete_lowest
         self.discrete_highest = discrete_highest
         self.n_samples = n_samples
-        self.seed = random_seed
+        # self.seed = random_seed
 
     def sample(self):
         '''
@@ -73,7 +74,7 @@ class DiscreteNormal:
         -------
         (list)
         '''
-        np.random.seed(self.seed)
+        # np.random.seed(self.seed)
         continuous_samples = np.random.normal(self.mu, self.sigma, self.n_samples)
         discrete_samples = np.clip(np.round(continuous_samples), self.discrete_lowest, self.discrete_highest).astype(int)
         return list(discrete_samples)

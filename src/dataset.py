@@ -1,8 +1,10 @@
 import pandas as pd
+import plotly.figure_factory as ff
 
 class Dataset:
-    def __init__(self):
+    def __init__(self, params):
         self.patient_list = []
+        self.params = params
 
     def get_patients_df(self):
         patient_dict_list = []
@@ -15,3 +17,6 @@ class Dataset:
             df = pd.DataFrame(patient_dict_list)
             df = df.sort_values(by='p_id')
         return df
+
+
+
